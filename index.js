@@ -29,7 +29,6 @@ if (process.env.SERVER_ENV !== "development") {
     sessionOptions.cookie = {
     sameSite: "none",
     secure: true,
-    domain: process.env.SERVER_URL,
     };
 }
 
@@ -43,4 +42,8 @@ ModulesRoutes(app, db);
 AssignmentRoutes(app, db);
 Hello(app);
 Lab5(app);
-app.listen(process.env.PORT || 4000)
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
