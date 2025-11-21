@@ -5,8 +5,8 @@ export default function CourseRoutes(app, db) {
     const dao = CoursesDao(db);
     const enrollmentsDao = EnrollmentsDao(db);
 
-    const findAllCourses = (req, res) => {
-        const courses = dao.findAllCourses();
+    const findAllCourses = async (req, res) => {
+        const courses = await dao.findAllCourses();
         res.send(courses);
     }
 
@@ -24,22 +24,22 @@ export default function CourseRoutes(app, db) {
         res.json(courses);
     };
 
-    const createCourse = (req, res) => {
-        const newCourse = dao.createCourse(req.body);
+    const createCourse = async (req, res) => {
+        const newCourse = await dao.createCourse(req.body);
         res.json(newCourse);
     };
 
-    const deleteCourse = (req, res) => {
+    const deleteCourse = async (req, res) => {
         const { courseId } = req.params;
         enrollmentsDao.deleteEnrollmentsForCourse(courseId);
-        const status = dao.deleteCourse(courseId);
+        const status = await dao.deleteCourse(courseId);
         res.send(status);
     }
 
-    const updateCourse = (req, res) => {
+    const updateCourse = async (req, res) => {
         const { courseId } = req.params;
         const courseUpdates = req.body;
-        const status = dao.updateCourse(courseId, courseUpdates);
+        const status = await dao.updateCourse(courseId, courseUpdates);
         res.send(status);
     }
 
