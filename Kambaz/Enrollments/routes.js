@@ -3,11 +3,11 @@ import EnrollmentsDao from "./dao.js";
 export default function EnrollmentRoutes(app, db) {
     const enrollmentsDao = EnrollmentsDao(db);
 
-    const enrollUserInCourse = (req, res) => {
+    const enrollUserInCourse = async (req, res) => {
         let { userId, courseId } = req.params;
         
         if (userId === "current") {
-            const currentUser = req.session["currentUser"];
+            const currentUser = await req.session["currentUser"];
             if (!currentUser) {
                 res.status(401).json({ message: "Must be logged in to enroll" });
                 return;
@@ -15,15 +15,15 @@ export default function EnrollmentRoutes(app, db) {
             userId = currentUser._id;
         }
 
-        const newEnrollment = enrollmentsDao.enrollUserInCourse(userId, courseId);
+        const newEnrollment = await enrollmentsDao.enrollUserInCourse(userId, courseId);
         res.json(newEnrollment);
     };
 
-    const unenrollUserFromCourse = (req, res) => {
+    const unenrollUserFromCourse = async (req, res) => {
         let { userId, courseId } = req.params;
         
         if (userId === "current") {
-            const currentUser = req.session["currentUser"];
+            const currentUser = await req.session["currentUser"];
             if (!currentUser) {
                 res.status(401).json({ message: "Must be logged in to unenroll" });
                 return;
@@ -31,20 +31,20 @@ export default function EnrollmentRoutes(app, db) {
             userId = currentUser._id;
         }
 
-        enrollmentsDao.unenrollUserFromCourse(userId, courseId);
+        await enrollmentsDao.unenrollUserFromCourse(userId, courseId);
         res.sendStatus(204);
     };
 
-    const findAllEnrollments = (req, res) => {
-        const enrollments = enrollmentsDao.findAllEnrollments();
+    const findAllEnrollments = async (req, res) => {
+        const enrollments = await enrollmentsDao.findAllEnrollments();
         res.json(enrollments);
     };
 
-    const findEnrollmentsForUser = (req, res) => {
+    const findEnrollmentsForUser = async (req, res) => {
         let { userId } = req.params;
         
         if (userId === "current") {
-            const currentUser = req.session["currentUser"];
+            const currentUser = await req.session["currentUser"];
             if (!currentUser) {
                 res.status(401).json({ message: "Must be logged in" });
                 return;
@@ -52,13 +52,19 @@ export default function EnrollmentRoutes(app, db) {
             userId = currentUser._id;
         }
 
-        const enrollments = enrollmentsDao.findEnrollmentsForUser(userId);
+        const enrollments = await enrollmentsDao.findEnrollmentsForUser(userId);
         res.json(enrollments);
     };
-    
 
+    const findUsersForCourse = async (req, res) => {
+        const { courseId } = req.params;
+        const users = await enrollmentsDao.findUsersForCourse(courseId);
+        res.json(users);
+    };
+    
     app.post("/api/users/:userId/courses/:courseId", enrollUserInCourse);
     app.delete("/api/users/:userId/courses/:courseId", unenrollUserFromCourse);
     app.get("/api/enrollments", findAllEnrollments);
     app.get("/api/users/:userId/enrollments", findEnrollmentsForUser);
+    app.get("/api/courses/:courseId/users", findUsersForCourse);
 }

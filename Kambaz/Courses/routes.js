@@ -10,7 +10,7 @@ export default function CourseRoutes(app, db) {
         res.send(courses);
     }
 
-    const findCoursesForEnrolledUser = (req, res) => {
+    const findCoursesForEnrolledUser = async (req, res) => {
         let { userId } = req.params;
         if (userId === "current") {
             const currentUser = req.session["currentUser"];
@@ -20,7 +20,7 @@ export default function CourseRoutes(app, db) {
             }
             userId = currentUser._id;
         }
-        const courses = dao.findCoursesForEnrolledUser(userId);
+        const courses = await dao.findCoursesForEnrolledUser(userId);
         res.json(courses);
     };
 
