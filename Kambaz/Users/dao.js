@@ -13,7 +13,7 @@ export default function UsersDao() {
     const findUserById = (userId) => model.findById(userId);
     const findUserByUsername = (username) => model.findOne({ username: username });
     const findUserByCredentials = (username, password) => model.findOne({ username, password });
-    const updateUser = (userId, user) => model.updateOne({ _id: userId }, { $set: user });
+    const updateUser = (userId, user) => model.findByIdAndUpdate(userId, user, { new: true });
     const deleteUser = (userId) => model.deleteOne({ _id: userId });
 
     const findUsersByPartialName = (partialName) => {
